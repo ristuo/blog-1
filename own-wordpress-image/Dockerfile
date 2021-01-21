@@ -8,7 +8,3 @@ RUN cd /apache2-mod-log-ipmask-master &&\
   dpkg -i ../libapache2-mod-log-ipmask_1.0.0_amd64.deb &&\ 
   a2enmod log_ipmask
 COPY log_ipmask.conf /etc/apache2/mods-available/log_ipmask.conf
-RUN apt-get update &&\
-  apt-get install -yqq snapd
-RUN snap install core && sudo snap refresh core
-RUN snap install --classic certbot && ln -s /snap/bin/certbot /usr/bin/certbot
