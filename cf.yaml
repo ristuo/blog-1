@@ -1,0 +1,79 @@
+Resources:
+
+  OutputBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: "wordpress-blog-1-logs"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+        IgnorePublicAcls: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - 
+          ServerSideEncryptionByDefault:
+            SSEAlgorithm: "AES256"
+
+  LogFireHoseRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - "firehose.amazonaws.com"
+            Action:
+              - 'sts:AssumeRole'
+      Policies: 
+      - PolicyName: "Allow-S3-Access"
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            Effect: "Allow"
+            Action: "s3:*"
+            Resource: !Join 
+              - ""
+              - - !GetAtt OutputBucket.Arn
+                - "/*"
+
+  LogFireHose:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      S3DestinationConfiguration:
+        BucketARN: !GetAtt OutputBucket.Arn
+        RoleARN: !GetAtt LogFireHoseRole.Arn
+        BufferingHints:
+          IntervalInSeconds: 60
+          SizeInMBs: 32
+
+  LogsToFireHoseRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - "logs.eu-west-1.amazonaws.com"
+            Action:
+              - 'sts:AssumeRole'
+      Policies: 
+      - PolicyName: "Allow-Firehose-Things"
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            Effect: "Allow"
+            Action: "firehose:*"
+            Resource: !GetAtt LogFireHose.Arn
+
+  LogFilterRule:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !GetAtt LogFireHose.Arn
+      FilterPattern: ""
+      LogGroupName: "wordpress-blog-1"
+      RoleArn: !GetAtt LogsToFireHoseRole.Arn
