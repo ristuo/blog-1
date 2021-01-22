@@ -8,3 +8,6 @@ RUN cd /apache2-mod-log-ipmask-master &&\
   dpkg -i ../libapache2-mod-log-ipmask_1.0.0_amd64.deb &&\ 
   a2enmod log_ipmask
 COPY log_ipmask.conf /etc/apache2/mods-available/log_ipmask.conf
+RUN a2enmod ssl
+RUN a2ensite default-ssl.conf
+COPY default-ssl.conf /etc/apache2/sites-available
