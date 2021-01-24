@@ -11,3 +11,4 @@ COPY log_ipmask.conf /etc/apache2/mods-available/log_ipmask.conf
 RUN a2enmod ssl
 RUN a2ensite default-ssl.conf
 COPY default-ssl.conf /etc/apache2/sites-available
+COPY 000-default.conf /etc/apache2/sites-available

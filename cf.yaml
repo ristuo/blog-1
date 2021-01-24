@@ -46,7 +46,7 @@ Resources:
         BucketARN: !GetAtt OutputBucket.Arn
         RoleARN: !GetAtt LogFireHoseRole.Arn
         BufferingHints:
-          IntervalInSeconds: 60
+          IntervalInSeconds: 300
           SizeInMBs: 32
 
   LogsToFireHoseRole:

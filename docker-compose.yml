@@ -14,7 +14,9 @@ services:
       WORDPRESS_DB_PASSWORD: "${MYSQL_PASSWORD}"
       WORDPRESS_DB_NAME: "${MYSQL_DATABASE}" 
     volumes:
-      - wordpress:/var/www/html
+      - "wordpress:/var/www/html"
+      - "/etc/letsencrypt/live/${WORDPRESS_BLOG_1_DOMAIN}:/etc/letsencrypt/live/blog"
+      - "/etc/letsencrypt/archive/${WORDPRESS_BLOG_1_DOMAIN}:/etc/letsencrypt/archive/${WORDPRESS_BLOG_1_DOMAIN}"
     logging:
       driver: "awslogs"
       options:
